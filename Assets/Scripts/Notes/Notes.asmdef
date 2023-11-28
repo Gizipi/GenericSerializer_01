@@ -1,0 +1,17 @@
+{
+    "name": "Notes",
+    "rootNamespace": "",
+    "references": [
+        "GUID:3c858e2c067a46c49b72a392e5ab33cb",
+        "GUID:37180d43aa4b85c4b9076e2ef48a3b2a"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
