@@ -21,7 +21,7 @@ public class ActionTimer : MonoBehaviour
         if (_currentTime < 0)
             return;
 
-        _currentTime += Time.deltaTime;
+        _currentTime++;
     }
 
     public float currentTime()
