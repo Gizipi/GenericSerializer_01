@@ -27,6 +27,11 @@ public class ActionStorer
         _actionTimer = new ActionTimer();
     }
 
+    public void Update()
+    {
+        _actionTimer.Count();
+    }
+
     public void StoreAction(Actions action)
     {
         ActionPoolItem newActionPoolItem = new ActionPoolItem(action, _actionTimer.currentTime(), _character.transform.position);
@@ -41,6 +46,7 @@ public class ActionStorer
     public void ResetActionPool()
     {
         _actionPool = new List<ActionPoolItem>();
+        _actionTimer.SetCurrentTime(0);
     }
 }
 

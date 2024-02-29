@@ -24,7 +24,9 @@ public class ActionDistributer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            _player._gravity.SetDirection(Vector3.down);
             ActionStorer storer = _player.actionStorer;
+            _player.RecieveAction(Actions.timeTravel);
             List<ActionPoolItem> list = storer.actionPool();
             storer.ResetActionPool();
 

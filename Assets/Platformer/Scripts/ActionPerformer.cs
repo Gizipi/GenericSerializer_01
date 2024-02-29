@@ -3,6 +3,11 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
+public class values
+{
+    public const float MAX_TIME = 9;
+}
+
 public class ActionPerformer : MonoBehaviour
 {
 
@@ -11,11 +16,51 @@ public class ActionPerformer : MonoBehaviour
     List<ActionPoolItem> _currentActionPool;
     Character _CurrentCharacter;
 
+    bool _preformingBackwards = false;
+
 
     // Update is called once per frame
     void Update()
     {
-        PerformActionPool();
+        if (_preformingBackwards)
+        {
+            BackwardsPerformActionPool();
+        }
+        else
+        {
+            PerformActionPool();
+        }
+    }
+
+    private void BackwardsPerformActionPool()
+    {
+        if(_count <= 0 || _index <= 0)
+        {
+            _preformingBackwards = false;
+            _count = 0;
+            _index = 0;
+            _CurrentCharacter._gravity.SetDirection(new Vector3(0, -1, 1));
+            _CurrentCharacter.actionStorer.ResetActionPool();
+            _CurrentCharacter.transform.position = _currentActionPool[0].location;
+            return;
+        }
+
+        _count = _count - 10f;
+
+        if (_count > _currentActionPool[_index].time)
+        {
+            return;
+        }
+
+        Vector3 characterLocation = _CurrentCharacter.gameObject.transform.position;
+        Vector3 actionLocation = _currentActionPool[_index].location;
+
+        if (characterLocation.x != actionLocation.x || characterLocation.y != actionLocation.y || characterLocation.z != actionLocation.z)
+            _CurrentCharacter.gameObject.transform.position = actionLocation;
+
+        _CurrentCharacter.RecieveAction(_currentActionPool[_index - 1].action, true);
+
+        _index--;
     }
 
     private void PerformActionPool()
@@ -37,8 +82,6 @@ public class ActionPerformer : MonoBehaviour
         _CurrentCharacter.RecieveAction(_currentActionPool[_index].action);
 
         _index++;
-
-        Debug.Log($"Index: {_index}, time on this acton: {_currentActionPool[_index].time}");
         if (_index >= _currentActionPool.Count)
         {
             _currentActionPool = new List<ActionPoolItem>(0);
@@ -51,10 +94,34 @@ public class ActionPerformer : MonoBehaviour
     {
         Debug.Log($"Recieve action pool, lenght: {actionpool.Count}");
 
+
+        _preformingBackwards = true;
         _CurrentCharacter = character;
-        _currentActionPool = new List<ActionPoolItem>(actionpool);
-        _index = 0;
-        _count = time;
+        _currentActionPool = new List<ActionPoolItem>();
+            
+        float currentLargestTime = actionpool[actionpool.Count -1].time;
+        //if(currentLargestTime >  values.MAX_TIME)
+        //{
+            foreach(ActionPoolItem item in actionpool)
+            {
+            Debug.Log($"Time of action: {item.time}"); //pull backwards snipping out of here and try to put it into reverse preforming, also need to corectly store full action pull for repreforming actions
+                if(item.time < 3) { 
+                    _currentActionPool.Add(item);
+                }
+
+                if (item.time > (3 + (values.MAX_TIME / 3) / 2) && item.time <= (6 + (values.MAX_TIME / 3) / 2))
+                {
+                    _currentActionPool.Add(item);
+                }
+                if(item.time > currentLargestTime - 3)
+                {
+                    _currentActionPool.Add(item);
+                }
+            }
+       // }
+
+        _index = _currentActionPool.Count - 1;
+        _count = _currentActionPool[_index].time;
         // _currentActionPool = new List<ActionPoolItem>(actionpool.Count);
         //actionpool.ForEach(item =>
         //{
@@ -65,6 +132,7 @@ public class ActionPerformer : MonoBehaviour
 
 public enum Actions
 {
+    idle = -1,
     jump = 0,
     pressLeft = 1,
     pressRight = 2,
@@ -81,5 +149,6 @@ public enum Actions
     pressBlock = 13,
     releaseBlock = 14,
     pressSpecial = 15,
-    releaseSpecial = 16
+    releaseSpecial = 16,
+    timeTravel = 17
 }
